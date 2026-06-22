@@ -37,6 +37,7 @@ def get_previous_day_levels(symbol: str, atr_period: int = 20):
     latest_atr = atr.iloc[-1]
     pip_size = get_pip_size(symbol)
     
+    
     return {
         'date': latest.name.strftime('%Y-%m-%d'),
         'high': float(latest['High']),
