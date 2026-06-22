@@ -5,7 +5,8 @@ import numpy as np
 
 st.set_page_config(page_title="Artemis", layout="centered", initial_sidebar_state="collapsed")
 st.title("🌙 Artemis")
-st.caption("Daily ATR(20) Levels • Previous Day's High/Low as Entry • Refresh after 4 PM ET")
+st.caption("Daily ATR(20) Levels • Run after 5 PM ET for full 24hr session")
+
 
 pairs = {
     "EURUSD": "EUR/USD",
