@@ -3,9 +3,9 @@ import requests
 import pandas as pd
 import numpy as np
 
-st.set_page_config(page_title="ATR 20 Levels", layout="centered", initial_sidebar_state="collapsed")
-st.title("📈 Daily ATR(20) Levels")
-st.caption("Previous Day's High/Low as Entry • Refresh after 4 PM ET")
+st.set_page_config(page_title="Artemis", layout="centered", initial_sidebar_state="collapsed")
+st.title("🌙 Artemis")
+st.caption("Daily ATR(20) Levels • Previous Day's High/Low as Entry • Refresh after 4 PM ET")
 
 pairs = {
     "EURUSD": "EUR/USD",
@@ -78,8 +78,8 @@ def calculate_levels(high, low, atr_pips, pip_size=0.0001):
     c2.metric("Target",    f"{short_target:{fmt}}")
     c3.metric("Stop Loss", f"{short_stop:{fmt}}")
 
-if st.button("🔄 Get Today's Levels", type="primary"):
-    with st.spinner("Fetching latest market data..."):
+if st.button("🌙 Get Today's Levels", type="primary"):
+    with st.spinner("Scanning the cosmos..."):
         try:
             data = get_previous_day_levels(pairs[selected_pair])
 
@@ -96,4 +96,4 @@ if st.button("🔄 Get Today's Levels", type="primary"):
         except Exception as e:
             st.error(f"Error fetching data: {e}")
 
-st.info("💡 Add this page to your home screen for quick access")
+st.info("💡 Add Artemis to your home screen for quick access")
