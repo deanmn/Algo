@@ -93,4 +93,4 @@ if st.button("🔄 Get Today's Levels", type="primary"):
         except Exception as e:
             st.error(f"Error fetching data: {e}\n\nTry again after 4 PM ET (market close).")
 
-st.info("💡 **Reminder**: Long Entry = Previous Day's High\nShort Entry = Previous Day's Low\nBest used right after market close."
+st.info("💡 Add this page to your home screen for quick access")
