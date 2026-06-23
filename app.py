@@ -23,7 +23,6 @@ def get_pip_size(pair):
 def get_previous_day_levels(instrument, atr_period=20):
     api_key = st.secrets["OANDA_API_KEY"]
 
-    # Demo account URL
     url = f"https://api-fxpractice.oanda.com/v3/instruments/{instrument}/candles"
 
     headers = {"Authorization": f"Bearer {api_key}"}
@@ -68,24 +67,24 @@ def calculate_levels(high, low, atr_pips, pip_size=0.0001):
     fmt = ".2f" if pip_size == 0.01 else ".4f"
 
     long_entry  = high
-    long_target = high + (0.92 * atr_value)
-    long_stop   = low  + (5.0  * pip_size)
+    long_tp     = high + (0.92 * atr_value)
+    long_sl     = low  + (5.0  * pip_size)
 
-    short_entry  = low
-    short_target = low  - (0.92 * atr_value)
-    short_stop   = high - (5.0  * pip_size)
+    short_entry = low
+    short_tp    = low  - (0.92 * atr_value)
+    short_sl    = high - (5.0  * pip_size)
 
     st.subheader("🟢 LONG Trade")
     c1, c2, c3 = st.columns(3)
-    c1.metric("Entry",     f"{long_entry:{fmt}}")
-    c2.metric("Target",    f"{long_target:{fmt}}")
-    c3.metric("Stop Loss", f"{long_stop:{fmt}}")
+    c1.metric("Entry",       f"{long_entry:{fmt}}")
+    c2.metric("Stop Loss",   f"{long_sl:{fmt}}")
+    c3.metric("Take Profit", f"{long_tp:{fmt}}")
 
     st.subheader("🔴 SHORT Trade")
     c1, c2, c3 = st.columns(3)
-    c1.metric("Entry",     f"{short_entry:{fmt}}")
-    c2.metric("Target",    f"{short_target:{fmt}}")
-    c3.metric("Stop Loss", f"{short_stop:{fmt}}")
+    c1.metric("Entry",       f"{short_entry:{fmt}}")
+    c2.metric("Stop Loss",   f"{short_sl:{fmt}}")
+    c3.metric("Take Profit", f"{short_tp:{fmt}}")
 
 if st.button("🌙 Get Today's Levels", type="primary"):
     with st.spinner("Scanning the cosmos..."):
