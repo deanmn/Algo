@@ -48,10 +48,10 @@ def get_previous_day_levels(symbol, atr_period=20):
     pip_size = get_pip_size(symbol.replace("/", ""))
 
     return {
-        "date":     df.index[-1].strftime("%Y-%m-%d"),
-        "high":     float(df["high"].values[-1]),
-        "low":      float(df["low"].values[-1]),
-        "atr_pips": round(float(atr.values[-1]) / pip_size),
+        "date":     df.index[-2].strftime("%Y-%m-%d"),
+        "high":     float(df["high"].values[-2]),
+        "low":      float(df["low"].values[-2]),
+        "atr_pips": round(float(atr.values[-2]) / pip_size),
         "pip_size": pip_size,
     }
 
