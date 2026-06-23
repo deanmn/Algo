@@ -5,15 +5,14 @@ import numpy as np
 
 st.set_page_config(page_title="Artemis", layout="centered", initial_sidebar_state="collapsed")
 st.title("🌙 Artemis")
-st.caption("Daily ATR(20) Levels • Run after 5 PM ET for full 24hr session")
-
+st.caption("Daily ATR(20) Levels • Powered by OANDA")
 
 pairs = {
-    "EURUSD": "EUR/USD",
-    "GBPUSD": "GBP/USD",
-    "USDJPY": "USD/JPY",
-    "EURJPY": "EUR/JPY",
-    "GBPJPY": "GBP/JPY",
+    "EURUSD": "EUR_USD",
+    "GBPUSD": "GBP_USD",
+    "USDJPY": "USD_JPY",
+    "EURJPY": "EUR_JPY",
+    "GBPJPY": "GBP_JPY",
 }
 
 selected_pair = st.selectbox("Select Currency Pair", options=list(pairs.keys()))
@@ -21,23 +20,32 @@ selected_pair = st.selectbox("Select Currency Pair", options=list(pairs.keys()))
 def get_pip_size(pair):
     return 0.01 if "JPY" in pair else 0.0001
 
-def get_previous_day_levels(symbol, atr_period=20):
-    api_key = st.secrets["TWELVE_DATA_API_KEY"]
+def get_previous_day_levels(instrument, atr_period=20):
+    api_key = st.secrets["OANDA_API_KEY"]
 
-    r = requests.get(
-        "https://api.twelvedata.com/time_series",
-        params={"symbol": symbol, "interval": "1day", "outputsize": 60, "apikey": api_key},
-        timeout=10
-    )
+    # Demo account URL
+    url = f"https://api-fxpractice.oanda.com/v3/instruments/{instrument}/candles"
+
+    headers = {"Authorization": f"Bearer {api_key}"}
+    params  = {"count": 60, "granularity": "D", "price": "M"}
+
+    r = requests.get(url, headers=headers, params=params, timeout=10)
     data = r.json()
 
-    if data.get("status") != "ok":
-        raise ValueError(data.get("message", "API error — check your API key in Streamlit Secrets"))
+    if "candles" not in data:
+        raise ValueError(data.get("errorMessage", "OANDA API error — check your API key in Streamlit Secrets"))
 
-    df = pd.DataFrame(data["values"])
-    df["datetime"] = pd.to_datetime(df["datetime"])
-    df = df.set_index("datetime").sort_index()
-    df = df[["high", "low", "close"]].apply(pd.to_numeric)
+    candles = [c for c in data["candles"] if c["complete"]]
+
+    if len(candles) < atr_period:
+        raise ValueError(f"Not enough data: only {len(candles)} completed candles returned.")
+
+    highs  = [float(c["mid"]["h"]) for c in candles]
+    lows   = [float(c["mid"]["l"]) for c in candles]
+    closes = [float(c["mid"]["c"]) for c in candles]
+    dates  = [c["time"][:10] for c in candles]
+
+    df = pd.DataFrame({"high": highs, "low": lows, "close": closes}, index=dates)
 
     high_low   = df["high"] - df["low"]
     high_close = np.abs(df["high"] - df["close"].shift())
@@ -45,13 +53,13 @@ def get_previous_day_levels(symbol, atr_period=20):
     tr  = pd.concat([high_low, high_close, low_close], axis=1).max(axis=1)
     atr = tr.rolling(window=atr_period).mean()
 
-    pip_size = get_pip_size(symbol.replace("/", ""))
+    pip_size = get_pip_size(instrument.replace("_", ""))
 
     return {
-        "date":     df.index[-2].strftime("%Y-%m-%d"),
-        "high":     float(df["high"].values[-2]),
-        "low":      float(df["low"].values[-2]),
-        "atr_pips": round(float(atr.values[-2]) / pip_size),
+        "date":     df.index[-1],
+        "high":     float(df["high"].values[-1]),
+        "low":      float(df["low"].values[-1]),
+        "atr_pips": round(float(atr.values[-1]) / pip_size),
         "pip_size": pip_size,
     }
 
