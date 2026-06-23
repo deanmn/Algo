@@ -92,12 +92,6 @@ if st.button("🌙 Get Today's Levels", type="primary"):
             data = get_previous_day_levels(pairs[selected_pair])
 
             st.success(f"✅ **{selected_pair}** — Previous Day: **{data['date']}**")
-            fmt = ".2f" if data["pip_size"] == 0.01 else ".4f"
-
-            c1, c2, c3 = st.columns(3)
-            c1.metric("High",    f"{data['high']:{fmt}}")
-            c2.metric("Low",     f"{data['low']:{fmt}}")
-            c3.metric("ATR(20)", f"{data['atr_pips']} pips")
 
             calculate_levels(data["high"], data["low"], data["atr_pips"], data["pip_size"])
 
